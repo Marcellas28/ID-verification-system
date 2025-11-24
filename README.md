@@ -1,6 +1,7 @@
 # ID-verification-system
 A system providing students an interface to match their details with their facial recognition to avoid error and mismatch of details that runs locally and a student can access if he's connected to the school wifi....
 
+#code in branch *master
 # Student Photo Verification System
 
 A comprehensive web-based system for managing student passport photo assignments at Kenya Medical Training College.
