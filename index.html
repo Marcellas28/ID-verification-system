@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KMTC - Student Photo Verification System</title>
+    <style>
+        :root {
+            --kmtc-blue: #0056A3;
+            --kmtc-dark-blue: #003366;
+            --kmtc-light-blue: #E6F2FF;
+            --kmtc-green: #28a745;
+            --kmtc-gold: #FFD700;
+            --white: #ffffff;
+            --gray-light: #f8f9fa;
+            --gray-medium: #6c757d;
+            --gray-dark: #343a40;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--kmtc-light-blue) 0%, var(--white) 100%);
+            min-height: 100vh;
+            position: relative;
+            line-height: 1.6;
+        }
+
+        /* Watermark Background */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('mtclogo.png');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 300px 300px;
+            opacity: 0.08;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header Styles */
+        .header {
+            background: var(--white);
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .logo {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(45deg, var(--kmtc-blue), var(--kmtc-dark-blue));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-weight: bold;
+            font-size: 12px;
+            text-align: center;
+            border: 3px solid var(--kmtc-gold);
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .title-section h1 {
+            color: var(--kmtc-blue);
+            font-size: 1.5em;
+            margin-bottom: 5px;
+            line-height: 1.3;
+        }
+
+        .title-section .subtitle {
+            color: var(--gray-medium);
+            font-size: 0.9em;
+        }
+
+        /* Main Card */
+        .main-card {
+            background: var(--white);
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--kmtc-blue), var(--kmtc-dark-blue));
+            color: var(--white);
+            padding: 20px;
+        }
+
+        .card-header h2 {
+            font-size: 1.4em;
+            margin-bottom: 8px;
+        }
+
+        .card-header p {
+            opacity: 0.9;
+            font-size: 0.9em;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        /* ID Input Section */
+        .id-input-section {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+            max-width: 500px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+        }
+
+        .input-field {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--kmtc-blue);
+            box-shadow: 0 0 0 3px rgba(0, 86, 163, 0.1);
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            min-height: 44px;
+            min-width: 44px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--kmtc-blue), var(--kmtc-dark-blue));
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 86, 163, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--kmtc-green), #1e7e34);
+            color: var(--white);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: var(--white);
+        }
+
+        .btn:disabled {
+            background: var(--gray-medium);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            opacity: 0.6;
+        }
+
+        /* Student Details */
+        .student-details {
+            background: var(--gray-light);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid var(--kmtc-blue);
+            display: none;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .detail-item {
+            background: var(--white);
+            padding: 12px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: var(--kmtc-blue);
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+
+        .detail-value {
+            font-size: 1em;
+            color: var(--gray-dark);
+        }
+
+        .photo-grid-section {
+            display: none;
+            margin: 20px 0;
+        }
+
+        .section-title {
+            color: var(--kmtc-blue);
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            text-align: center;
+        }
+
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .photo-card {
+            background: var(--white);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .photo-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .photo-card.selected {
+            border-color: var(--kmtc-green);
+            background: linear-gradient(135deg, var(--white), #f0fff4);
+        }
+
+        .photo-container {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 12px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid #e0e0e0;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .photo-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center top;
+        }
+
+        .photo-identifier {
+            font-size: 1em;
+            font-weight: 600;
+            color: var(--kmtc-blue);
+            background: var(--kmtc-light-blue);
+            padding: 4px 12px;
+            border-radius: 15px;
+            display: inline-block;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .page-info {
+            color: var(--kmtc-blue);
+            font-weight: 600;
+            margin: 0 8px;
+            font-size: 0.9em;
+        }
+
+        .nav-btn {
+            background: var(--kmtc-blue);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            min-width: 40px;
+            min-height: 40px;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background: var(--kmtc-dark-blue);
+            transform: scale(1.1);
+        }
+
+        .nav-btn:disabled {
+            background: var(--gray-medium);
+            cursor: not-allowed;
+            opacity: 0.5;
+            transform: none;
+        }
+
+        .photos-loading {
+            text-align: center;
+            padding: 20px;
+            color: var(--gray-medium);
+            grid-column: 1 / -1;
+        }
+
+        .no-photos {
+            text-align: center;
+            padding: 30px;
+            color: var(--gray-medium);
+            grid-column: 1 / -1;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: var(--white);
+            border-radius: 15px;
+            padding: 25px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-icon {
+            font-size: 2.5em;
+            color: var(--kmtc-blue);
+            margin-bottom: 15px;
+        }
+
+        .modal h3 {
+            color: var(--kmtc-blue);
+            margin-bottom: 12px;
+            font-size: 1.3em;
+        }
+
+        .modal p {
+            color: var(--gray-dark);
+            margin-bottom: 20px;
+            line-height: 1.5;
+            font-size: 0.95em;
+        }
+
+        .warning-text {
+            color: #dc3545;
+            font-weight: 600;
+            background: #ffe6e6;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 12px 0;
+            font-size: 0.9em;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .success-section {
+            display: none;
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, #f0fff4, var(--white));
+            border-radius: 15px;
+            border: 3px solid var(--kmtc-green);
+            margin: 20px 0;
+        }
+
+        .success-icon {
+            font-size: 3em;
+            color: var(--kmtc-green);
+            margin-bottom: 15px;
+        }
+
+        .success-section h3 {
+            color: var(--kmtc-green);
+            font-size: 1.6em;
+            margin-bottom: 12px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            width: 35px;
+            height: 35px;
+            border: 3px solid var(--kmtc-light-blue);
+            border-top: 3px solid var(--kmtc-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 12px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .progress-section {
+            margin: 15px 0;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            color: var(--gray-medium);
+            font-size: 0.9em;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, var(--kmtc-blue), var(--kmtc-green));
+            border-radius: 8px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .error-message {
+            background: #ffe6e6;
+            color: #dc3545;
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin: 12px 0;
+            border-left: 4px solid #dc3545;
+            display: none;
+            font-size: 0.9em;
+        }
+
+        /* Mobile-specific styles */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .header {
+                padding: 12px 0;
+                margin-bottom: 15px;
+            }
+
+            .header-content {
+                padding: 0 15px;
+                gap: 10px;
+            }
+
+            .logo-section {
+                gap: 12px;
+            }
+
+            .logo {
+                width: 60px;
+                height: 60px;
+            }
+
+            .title-section h1 {
+                font-size: 1.3em;
+            }
+
+            .title-section .subtitle {
+                font-size: 0.85em;
+            }
+
+            .card-body {
+                padding: 15px;
+            }
+
+            .input-group {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .input-field {
+                min-width: 100%;
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 200px;
+            }
+
+            .photo-grid {
+                grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+                gap: 12px;
+            }
+
+            .photo-container {
+                width: 100px;
+                height: 100px;
+            }
+
+            .modal-content {
+                padding: 20px;
+                margin: 10px;
+            }
+
+            .modal-buttons {
+                flex-direction: column;
+            }
+
+            .modal-buttons .btn {
+                width: 100%;
+                max-width: none;
+            }
+
+            .details-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .pagination {
+                gap: 8px;
+            }
+
+            .nav-btn {
+                width: 36px;
+                height: 36px;
+                min-width: 36px;
+                min-height: 36px;
+            }
+
+            .page-info {
+                font-size: 0.85em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .photo-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .photo-container {
+                width: 90px;
+                height: 90px;
+            }
+            
+            .title-section h1 {
+                font-size: 1.2em;
+            }
+            
+            .card-header h2 {
+                font-size: 1.2em;
+            }
+        }
+
+        /* Prevent horizontal scroll on mobile */
+        html, body {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo">
+                        <img src="mtclogo.png" alt="KMTC Logo">
+                    </div>
+                    <div class="title-section">
+                        <h1>Student Photo Verification System</h1>
+                        <div class="subtitle">Kenya Medical Training College - Kilifi Campus</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="main-card">
+            <div class="card-header">
+                <h2>Verify Your Student Photo</h2>
+                <p>Enter your student ID and select your passport photo from the grid below</p>
+            </div>
+
+            <div class="card-body">
+                <div class="error-message" id="errorMessage"></div>
+
+                <div class="progress-section">
+                    <div class="progress-info">
+                        <span>Progress</span>
+                        <span id="progress-text">0% Complete</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                </div>
+
+                <div class="id-input-section">
+                    <div class="input-group">
+                        <input type="text" class="input-field" id="studentId" placeholder="Enter your Student ID (e.g., C/OTM/******/***)" maxlength="20">
+                        <button class="btn btn-primary" onclick="verifyStudentId()">Verify ID</button>
+                    </div>
+                </div>
+
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Processing your request...</p>
+                </div>
+
+                <div class="student-details" id="studentDetails">
+                    <h3 class="section-title">Student Information</h3>
+                    <div class="details-grid">
+                        <div class="detail-item">
+                            <div class="detail-label">Full Name</div>
+                            <div class="detail-value" id="displayName">-</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Student ID</div>
+                            <div class="detail-value" id="displayId">-</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">National ID</div>
+                            <div class="detail-value" id="displayRegNo">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="photo-grid-section" id="photoGridSection">
+                    <h3 class="section-title">Select Your Passport Photo</h3>
+                    <p style="text-align: center; color: var(--gray-medium); margin-bottom: 15px; font-size: 0.9em;">
+                        Click on your photo from the grid below. You can only select one photo.
+                    </p>
+                    
+                    <div class="pagination" id="paginationControls" style="display: none;">
+                        <button class="nav-btn" id="prevPage" disabled>←</button>
+                        <span class="page-info">Page <span id="currentPage">1</span> of <span id="totalPages">1</span></span>
+                        <button class="nav-btn" id="nextPage" disabled>→</button>
+                    </div>
+
+                    <div class="photo-grid" id="photoGrid">
+                        <div class="photos-loading">Loading photos...</div>
+                    </div>
+
+                    <div class="pagination" id="paginationControlsBottom" style="display: none;">
+                        <button class="nav-btn" id="prevPageBottom" disabled>←</button>
+                        <span class="page-info">Page <span id="currentPageBottom">1</span> of <span id="totalPagesBottom">1</span></span>
+                        <button class="nav-btn" id="nextPageBottom" disabled>→</button>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 15px;">
+                        <button class="btn btn-success" onclick="confirmSelection()" id="confirmBtn" disabled>Confirm Selection</button>
+                    </div>
+                </div>
+
+                <div class="success-section" id="successSection">
+                    <div class="success-icon">✓</div>
+                    <h3>Photo Successfully Assigned!</h3>
+                    <p>Your passport photo has been successfully linked to your student record.</p>
+                    <p><strong>Identifier:</strong> <span id="assignedIdentifier">-</span></p>
+                    <p><strong>File renamed to:</strong> <span id="newFilename">-</span></p>
+                    <div style="margin-top: 15px;">
+                        <button class="btn btn-primary" onclick="resetSystem()">Verify Another Student</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal" id="confirmationModal">
+        <div class="modal-content">
+            <div class="modal-icon">⚠️</div>
+            <h3>Confirm Your Selection</h3>
+            <p>You have selected photo with identifier:</p>
+            <div class="photo-identifier" style="font-size: 1.3em; margin: 12px 0;" id="modalIdentifier">IMG_000</div>
+            <div class="warning-text">
+                ⚠️ This action cannot be undone. You won't be able to change your photo later.
+            </div>
+            <p>Is this definitely your passport photo?</p>
+            <div class="modal-buttons">
+                <button class="btn btn-danger" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-success" onclick="finalizeAssignment()">Yes, Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'api/';
+
+        let selectedPhoto = null;
+        let currentStudentId = null;
+        let currentPage = 1;
+        let totalPages = 1;
+        const photosPerPage = 12;
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        function hideError() {
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+
+        async function verifyStudentId() {
+            const studentId = document.getElementById('studentId').value.trim().toUpperCase();
+            
+            if (!studentId) {
+                showError('Please enter your Student ID');
+                return;
+            }
+
+            hideError();
+            
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('confirmBtn').disabled = true;
+            
+            try {
+                const response = await fetch(API_BASE + 'verify_student.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ student_id: studentId })
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Server error occurred');
+                }
+                
+                if (data.success) {
+                    if (data.student.hasAssignedPhoto) {
+                        showError('This student already has an assigned photo. Please contact administrator.');
+                        return;
+                    }
+                    
+                    currentStudentId = studentId;
+                    
+                    document.getElementById('displayName').textContent = data.student.name;
+                    document.getElementById('displayId').textContent = data.student.id;
+                    document.getElementById('displayRegNo').textContent = data.student.regNo;
+                    document.getElementById('studentDetails').style.display = 'block';
+                    
+                    await loadPhotos(1);
+                    document.getElementById('photoGridSection').style.display = 'block';
+                    
+                    updateProgress(50);
+                } else {
+                    showError('Student ID not found. Please check and try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError(error.message || 'Network error. Please check your connection and try again.');
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        async function loadPhotos(page = 1) {
+            try {
+                document.getElementById('photoGrid').innerHTML = '<div class="photos-loading">Loading photos...</div>';
+                
+                const response = await fetch(API_BASE + `get_photos.php?page=${page}&limit=${photosPerPage}`);
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to load photos');
+                }
+                
+                if (data.success) {
+                    displayPhotoGrid(data.photos);
+                    updatePagination(data.current_page, data.total_pages, data.total_photos);
+                } else {
+                    throw new Error(data.error);
+                }
+            } catch (error) {
+                console.error('Error loading photos:', error);
+                document.getElementById('photoGrid').innerHTML = '<div class="no-photos">Error loading photos. Please try again.</div>';
+                showError('Error loading photos. Please try again.');
+            }
+        }
+
+        function updatePagination(currentPageNum, totalPagesNum, totalPhotos) {
+            currentPage = currentPageNum;
+            totalPages = totalPagesNum;
+
+            document.getElementById('currentPage').textContent = currentPageNum;
+            document.getElementById('currentPageBottom').textContent = currentPageNum;
+            document.getElementById('totalPages').textContent = totalPagesNum;
+            document.getElementById('totalPagesBottom').textContent = totalPagesNum;
+
+            document.getElementById('prevPage').disabled = currentPageNum <= 1;
+            document.getElementById('prevPageBottom').disabled = currentPageNum <= 1;
+            document.getElementById('nextPage').disabled = currentPageNum >= totalPagesNum;
+            document.getElementById('nextPageBottom').disabled = currentPageNum >= totalPagesNum;
+
+            const showPagination = totalPagesNum > 1;
+            document.getElementById('paginationControls').style.display = showPagination ? 'flex' : 'none';
+            document.getElementById('paginationControlsBottom').style.display = showPagination ? 'flex' : 'none';
+        }
+
+        function nextPage() {
+            if (currentPage < totalPages) {
+                loadPhotos(currentPage + 1);
+                selectedPhoto = null;
+                document.getElementById('confirmBtn').disabled = true;
+            }
+        }
+
+        function prevPage() {
+            if (currentPage > 1) {
+                loadPhotos(currentPage - 1);
+                selectedPhoto = null;
+                document.getElementById('confirmBtn').disabled = true;
+            }
+        }
+
+        function displayPhotoGrid(photos) {
+            const grid = document.getElementById('photoGrid');
+            grid.innerHTML = '';
+            
+            if (photos.length === 0) {
+                grid.innerHTML = '<div class="no-photos">No unassigned photos available. Please contact administrator.</div>';
+                return;
+            }
+            
+            photos.forEach(photo => {
+                const photoCard = document.createElement('div');
+                photoCard.className = 'photo-card';
+                photoCard.onclick = () => selectPhoto(photo.photo_id, photoCard);
+                
+                const img = document.createElement('img');
+                img.src = photo.file_path;
+                img.alt = `Student Photo ${photo.photo_id}`;
+                img.className = 'photo-image';
+                
+                img.onerror = function() {
+                    console.error('Failed to load image:', photo.file_path);
+                    this.style.display = 'none';
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'photo-container';
+                    errorDiv.innerHTML = `
+                        <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #f8f9fa; color: #6c757d; font-size: 12px; text-align: center; padding: 5px;">
+                            Image<br>Not Found
+                        </div>
+                    `;
+                    photoCard.querySelector('.photo-container').innerHTML = '';
+                    photoCard.querySelector('.photo-container').appendChild(errorDiv);
+                };
+                
+                photoCard.innerHTML = `
+                    <div class="photo-container">
+                        ${img.outerHTML}
+                    </div>
+                    <div class="photo-identifier">${photo.photo_id}</div>
+                `;
+                
+                grid.appendChild(photoCard);
+            });
+        }
+
+        function selectPhoto(photoId, element) {
+            document.querySelectorAll('.photo-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+
+            element.classList.add('selected');
+            selectedPhoto = photoId;
+            
+            document.getElementById('confirmBtn').disabled = false;
+        }
+
+        function confirmSelection() {
+            if (!selectedPhoto || !currentStudentId) {
+                showError('Please select a photo first');
+                return;
+            }
+            
+            document.getElementById('modalIdentifier').textContent = selectedPhoto;
+            document.getElementById('confirmationModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('confirmationModal').style.display = 'none';
+        }
+
+        async function finalizeAssignment() {
+            closeModal();
+
+            document.getElementById('loading').style.display = 'block';
+            
+            try {
+                const response = await fetch(API_BASE + 'assign_photo.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        student_id: currentStudentId,
+                        photo_id: selectedPhoto
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Assignment failed');
+                }
+                
+                if (data.success) {
+                    document.getElementById('studentDetails').style.display = 'none';
+                    document.getElementById('photoGridSection').style.display = 'none';             
+                    document.getElementById('assignedIdentifier').textContent = data.assigned_photo_id;
+                    document.getElementById('newFilename').textContent = data.new_filename;
+                    document.getElementById('successSection').style.display = 'block';
+                    
+                    updateProgress(100);
+                    
+                    console.log('Photo successfully assigned and renamed to:', data.new_filename);
+                } else {
+                    throw new Error(data.error);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Assignment failed: ' + error.message);
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        function resetSystem() {
+            selectedPhoto = null;
+            currentStudentId = null;
+            currentPage = 1;
+            
+            document.getElementById('studentId').value = '';
+            
+            document.getElementById('studentDetails').style.display = 'none';
+            document.getElementById('photoGridSection').style.display = 'none';
+            document.getElementById('successSection').style.display = 'none';
+            
+            document.getElementById('confirmBtn').disabled = true;
+            
+            updateProgress(0);
+            
+            document.querySelectorAll('.photo-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            hideError();
+            
+            document.getElementById('studentId').focus();
+        }
+
+        function updateProgress(percent) {
+            document.getElementById('progress-fill').style.width = percent + '%';
+            document.getElementById('progress-text').textContent = percent + '% Complete';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('studentId').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    verifyStudentId();
+                }
+            });
+
+            document.getElementById('prevPage').addEventListener('click', prevPage);
+            document.getElementById('nextPage').addEventListener('click', nextPage);
+            document.getElementById('prevPageBottom').addEventListener('click', prevPage);
+            document.getElementById('nextPageBottom').addEventListener('click', nextPage);
+
+            updateProgress(0);    
+            document.getElementById('studentId').focus();
+        });
+        
+        window.onclick = function(event) {
+            const modal = document.getElementById('confirmationModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+        
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
